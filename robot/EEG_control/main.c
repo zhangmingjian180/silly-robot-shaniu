@@ -53,7 +53,7 @@ int set_attr(int fd, speed_t speed, unsigned char vmin, unsigned char vtime){
         return -1;
     }
 
-    flag = cfsetispeed(&options, speed); //B115200 涓哄畯瀹氫箟
+    flag = cfsetispeed(&options, speed); //B115200 为宏定义
     if(flag == -1) {
         perror("can't set speed of termninal.");
         return -1;
@@ -265,11 +265,110 @@ void right() {
     rotate_forward(RB);
 }
 
+#define SYNC 0xAA
+#define EXCODE 0x55
+
+int parsePayload(unsigned char *payload, unsigned char pLength, int *att, int *mdti) {
+    unsigned char bytesParsed = 0;
+    unsigned char code;
+    unsigned char length;
+    unsigned char extendedCodeLevel;
+
+    int i = 0;
+    /* Loop until all bytes are parsed from the payload[] array... 循环解析负载字节*/
+    while (bytesParsed < pLength) {
+        /* Parse the extendedCodeLevel, code, and length
+        * 解析扩展代码级别 代码  长度
+        * 确定数据值类型         单字节/多字节
+        */
+        extendedCodeLevel = 0;
+        while (payload[bytesParsed] == EXCODE) {
+            extendedCodeLevel++;
+            bytesParsed++;
+        }
+        code = payload[bytesParsed++];
+        if (code & 0x80) length = payload[bytesParsed++];
+        else length = 1;
+        /* TODO: Based on the extendedCodeLevel, code, length,
+        * and the [CODE] Definitions Table, handle the next
+        * "length" bytes of data from the payload as
+        * appropriate for your application.
+        */
+        if ((extendedCodeLevel == 0) && (code == 0x04)) {
+            *att = payload[bytesParsed + i] & 0xFF;
+            //printf("Attention value(s): %02X  转换后的十进制数为：%d\n", *att, *att);
+        }
+
+
+        if ((extendedCodeLevel == 0) && (code == 0x05)) {
+            *mdti = payload[bytesParsed + i] & 0xFF;
+            //printf("Meditation value(s): %02X  转换后的十进制数为：%d\n", *mdti, *mdti);
+        }
+
+
+        /* Increment the bytesParsed by the length of the Data Value */
+        bytesParsed += length;
+    }
+
+
+    return (0);
+}
+
+void processStream(int fd, int *att, int *mdti) {
+    int checksum;
+    unsigned char payload[256];
+    unsigned char pLength;
+    unsigned char c;
+    unsigned char i;
+
+    while (1) {
+        read(fd, &c, 1);
+        if (c != SYNC) continue;
+        read(fd, &c, 1);
+        if (c != SYNC) continue;
+
+        while (1) {
+            read(fd, &pLength, 1);
+            if (pLength != 170) break;
+        }
+        if (pLength > 169) continue;
+
+        read(fd, payload, pLength);
+
+        checksum = 0;
+        for (i = 0; i < pLength; i++) checksum += payload[i];
+        checksum &= 0xFF;
+        checksum = ~checksum & 0xFF;
+
+        read(fd, &c, 1);
+
+        if (c != checksum) continue;
+
+        if (pLength > 4) {
+            parsePayload(payload, pLength, att, mdti); // Pass the addresses of 'att' and 'mdti'
+            printf("att: %d, mdti: %d\n", *att, *mdti); // Print the values of 'att' and 'mdti'
+            static unsigned char ch = 0;
+            if (*att > 60) {
+                ch = 'w';
+            } else {
+                ch = 'q';
+            }
+            switch(ch) {
+                case 'w': front();      break;
+                case 'q': stop();       break;
+            }
+        }
+
+    }
+}
+
+
+
 void main() {
 	int flag = 0, n = 0;
-	
+
 	printf("Starting ...\n");
-    
+
     stop();
 
 	int fd = 0;
@@ -286,24 +385,14 @@ void main() {
         return;
     }
 
-	unsigned char ch = 0;
-	while(1) {
-		unsigned char buffer[2] = {0};
-    	n = read(fd, buffer, sizeof(buffer));
-    	if(n == -1) {
-        	perror("failed to read. error code 002");
-        	return;
-    	}
-    	puts(buffer);
 
-		ch = buffer[0];
-		switch(ch) {
-            case 'w': front();      break;
-            case 'q': stop();       break;
-        }
+    int att = 0; // Declare 'att'
+    int mdti = 0; // Declare 'mdti'
 
-	}
+    processStream(fd, &att, &mdti);
 
-	printf("Finishing ...\n");
-	return;
+    close(fd);
+    printf("Finishing ...\n");
+    return ;
+
 }
