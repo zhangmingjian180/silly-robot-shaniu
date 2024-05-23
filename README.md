@@ -23,7 +23,7 @@ https://github.com/Icenowy/sunxi-tools f1c100s-spiflash 分支
 sudo sunxi-fel -p spiflash-write 0x0 images/boot/u-boot-sunxi-with-spl.bin
 sudo sunxi-fel -p spiflash-write 0x0100000 images/boot/suniv-f1c100s-licheepi-nano.dtb
 sudo sunxi-fel -p spiflash-write 0x0110000 images/boot/zImage
-...
+```
 
 ## uboot 启动参数
 ```
