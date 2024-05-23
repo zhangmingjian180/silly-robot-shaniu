@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset = 'utf-8'>
+</head>
+<body>
+<h3>silly-robot-shaniu</h3>
+<code>
+<p>小车功能：</p>
+<ol>
+    <li>远程遥控（运动控制）</li>
+    <li>远程对话</li>
+    <li>远征摄像</li>
+    <li>脑控</li>
+    <li>语音智能对话</li>
+</ol>
+
+<p>文档说明</p>
+<ul>
+   <li>小车配件表：Documents/components_car.pdf</li>
+</ul>
+</code>
+
+<h3>安装工具</h3>
+<code>
+# 安装烧写 spiflash 的工具<br/>
+https://github.com/Icenowy/sunxi-tools   f1c100s-spiflash 分支
+</code>
+
+<h3>烧写镜像</h3>
+<code>
+sudo sunxi-fel -p spiflash-write 0x0       images/boot/u-boot-sunxi-with-spl.bin<br/>
+sudo sunxi-fel -p spiflash-write 0x0100000 images/boot/suniv-f1c100s-licheepi-nano.dtb<br/>
+sudo sunxi-fel -p spiflash-write 0x0110000 images/boot/zImage<br/>
+</code>
+
+<h3>uboot 启动参数</h3>
+<code>
+# 该行用于从 spiflash 加载根文件系统，已被启用。<br/>
+# env set bootargs console=ttyS0,115200 panic=5 rootwait root=/dev/mtdblock3 rw rootfstype=jffs2<br/>
+<br/>
+# 从 spiflash 加载内核<br/>
+env set bootcmd "sf probe 0; sf read 0x80c00000 0x100000 0x4000; sf read 0x80008000 0x110000 0x400000; bootz 0x80008000 - 0x80c00000"</br>
+<br/>
+# 从 TF 加载根文件系统。<br/>
+env set bootargs console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 rw
+</code>
+
