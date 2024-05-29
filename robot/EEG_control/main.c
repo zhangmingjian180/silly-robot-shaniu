@@ -348,7 +348,7 @@ void processStream(int fd, int *att, int *mdti) {
             parsePayload(payload, pLength, att, mdti); // Pass the addresses of 'att' and 'mdti'
             printf("att: %d, mdti: %d\n", *att, *mdti); // Print the values of 'att' and 'mdti'
             static unsigned char ch = 0;
-            if (*att > 60) {
+            if (*att > 75) {
                 ch = 'w';
             } else {
                 ch = 'q';
