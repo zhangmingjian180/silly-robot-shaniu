@@ -252,17 +252,31 @@ void back() {
 }
 
 void left() {
-    rotate_stop(LF);
+    rotate_backward(LF);
+    rotate_backward(RB);
+    rotate_forward(RF);
     rotate_forward(LB);
+}
+
+void right() {
+    rotate_backward(RF);
+    rotate_backward(LB);
+    rotate_forward(LF);
+    rotate_forward(RB);
+}
+
+void left_rotate() {
+    rotate_backward(LF);
+    rotate_backward(LB);
     rotate_forward(RF);
     rotate_forward(RB);
 }
 
-void right() {
-    rotate_stop(RF);
-    rotate_forward(LB);
+void right_rotate() {
+    rotate_backward(RF);
+    rotate_backward(RB);
     rotate_forward(LF);
-    rotate_forward(RB);
+    rotate_forward(LB);
 }
 
 void main(int argc, char **argv) {
@@ -327,7 +341,9 @@ void main(int argc, char **argv) {
             case 's': back();       break;
             case 'a': left();       break;
             case 'd': right();      break;
-            case 'q': stop();       break;
+            case 'q': left_rotate();       break;
+            case 'e': right_rotate();      break;
+            case 'f': stop();       break;
         }
 
 	}
