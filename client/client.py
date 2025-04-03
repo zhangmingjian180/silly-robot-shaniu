@@ -12,7 +12,7 @@ logging.info("starting ...")
 
 s = socket.socket()
 addr = ("zhangmingjian180.love", 7921)
-key_set = {b'w', b's', b'a', b'd', b'q', b'l'}
+key_set = {b'w', b's', b'a', b'd', b'q', b'e', b'f', b'l'}
 
 try:
     s.connect(addr)
@@ -23,7 +23,7 @@ except ConnectionRefusedError:
     logging.error("Connection Refused to connet %s"%str(addr))
     sys.exit(0)
 logging.info("conneted %s"%str(addr))
-logging.info("please type 'w s a d' to send, 'Enter' to exit.")
+logging.info("please type 'w s a d q e f l' to send, 'Enter' to exit.")
 
 
 def on_press(key):
