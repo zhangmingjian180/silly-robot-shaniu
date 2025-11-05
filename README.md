@@ -12,20 +12,34 @@
 
     小车配件表：Documents/components_car.pdf
 
-## 安装工具
+# robot
+
+## raspberry_pi_5
+
+```
+cd robot/raspberry_pi_5/
+make
+cp silly-robot-shaniu.service /lib/systemd/system/
+service silly-robot-shaniu start
+systemctl enable silly-robot-shaniu
+```
+
+## licheepi_nano
+
+### 安装工具
 ```
 安装烧写 spiflash 的工具
 https://github.com/Icenowy/sunxi-tools f1c100s-spiflash 分支
 ```
 
-## 烧写镜像
+### 烧写镜像
 ```
 sudo sunxi-fel -p spiflash-write 0x0 images/boot/u-boot-sunxi-with-spl.bin
 sudo sunxi-fel -p spiflash-write 0x0100000 images/boot/suniv-f1c100s-licheepi-nano.dtb
 sudo sunxi-fel -p spiflash-write 0x0110000 images/boot/zImage
 ```
 
-## uboot 启动参数
+### uboot 启动参数
 ```
 # 从 spiflash 加载内核
 env set bootcmd "sf probe 0; sf read 0x80c00000 0x100000 0x4000; sf read 0x80008000 0x110000 0x400000; bootz 0x80008000 - 0x80c00000"
@@ -37,9 +51,9 @@ env set bootargs console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 rw
 # env set bootargs console=ttyS0,115200 panic=5 rootwait root=/dev/mtdblock3 rw rootfstype=jffs2
 ```
 
-## 服务器
+# 服务器
 
-### 安装带有rtmp的nginx:
+## 安装带有rtmp的nginx:
 ```
 wget https://nginx.org/download/nginx-1.28.0.tar.gz && tar xf nginx-1.28.0.tar.gz
 wget https://github.com/arut/nginx-rtmp-module/archive/refs/heads/master.zip && unzip master.zip
@@ -50,7 +64,7 @@ make
 sudo make install
 ```
 
-### 配置nginx，修改/usr/local/nginx/conf/nginx.conf
+## 配置nginx，修改/usr/local/nginx/conf/nginx.conf
 ```
 worker_processes  1;
 
@@ -71,3 +85,10 @@ rtmp {
 }
 ```
 
+## 启动python服务
+```
+cd server/
+cp silly-robot-shaniu.service /lib/systemd/system/
+service silly-robot-shaniu start
+systemctl enable silly-robot-shaniu
+```
