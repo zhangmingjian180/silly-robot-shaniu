@@ -8,4 +8,5 @@ robot_id=001
 cd $work_dir
 
 ./a.out > /dev/null 2>&1 &
-/usr/bin/ffmpeg -f v4l2 -i /dev/video0 -f flv rtmp://${host}:${port}/mytv/${robot_id} > /dev/null 2>&1
+/usr/bin/ffmpeg -f v4l2 -i /dev/video0 -f flv rtmp://${host}:${port}/mytv/${robot_id} > /dev/null 2>&1 &
+wait

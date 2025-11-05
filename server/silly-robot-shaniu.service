@@ -1,0 +1,12 @@
+[Unit]
+Description=silly-robot-shaniu server
+
+[Service]
+Type=idle
+ExecStart=/bin/sh /opt/silly-robot-shaniu/server/run.sh
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

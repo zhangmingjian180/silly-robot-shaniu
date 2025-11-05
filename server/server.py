@@ -5,21 +5,26 @@ import threading
 from log import logging
 
 queue = multiprocessing.Queue()
-lock = threading.Lock()
+lock_r = threading.Lock()
+lock_w = threading.Lock()
 
+# client thread
 def socket_thread(subs):
     while True:
         try:
             i = subs.recv(1)
-        except:
+        except Exception:
             return
+
         if i == b'':
             logging.warning("connection client interrupt %s." % str(subs))
             return
-        logging.debug(str(i))
-        with lock:
+        with lock_w:
             queue.put(i)
+            logging.debug("put: %s", str(i))
+        logging.debug("successful to receive: %s", str(i))
 
+# build server of client
 def key_server():
     addr = ("0.0.0.0", 7921)
     s = socket.socket()
@@ -31,27 +36,40 @@ def key_server():
         th = threading.Thread(target=socket_thread, args=[subs])
         th.start()
 
+# robot thread
 def esp_thread(subs):
     while True:
-        with lock:
+        with lock_r:
             i = queue.get()
-
-        status = subs.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
-        if status != 0:
-            logging.warning("connection refused %s." % str(subs))
-            queue.put(i)
-            return
+            logging.debug("get: %s", str(i))
 
         try:
             count = subs.send(i)
             if count != len(i):
                 logging.warning("failed to send %s." % str(subs))
+                with lock_w:
+                    queue.put(i)
+                    logging.debug("put: %s", str(i))
+                return
 
-        except:
+        except Exception:
             logging.warning("connection interrupted %s." % str(subs))
-            queue.put(i)
+            with lock_w:
+                queue.put(i)
+                logging.debug("put: %s", str(i))
             return
 
+        # check if connection is ok
+        status = subs.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
+        if status != 0 or subs.recv(1) == b'':
+            logging.warning("connection refused %s." % str(subs))
+            with lock_w:
+                queue.put(i)
+                logging.debug("put: %s", str(i))
+            return
+        logging.debug("successful to send: %s", str(i))
+
+# build server of robot
 def esp_server():
     addr = ("0.0.0.0", 7922)
     s = socket.socket()
