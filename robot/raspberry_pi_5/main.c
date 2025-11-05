@@ -7,10 +7,14 @@
 
 #include "opration.h"
 
+int port = 7922;
+char host[] = "47.120.78.19";
+
 int main() {
     int sockfd;
     struct sockaddr_in serv_addr;
     unsigned char buf[1] = {0};
+    unsigned char buf_send[1] = {'o'};
 
     stop();
 
@@ -23,8 +27,8 @@ int main() {
  
     // 初始化服务器地址
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(7922); // 端口号
-    serv_addr.sin_addr.s_addr = inet_addr("47.108.220.136"); // IP地址
+    serv_addr.sin_port = htons(port); // 端口号
+    serv_addr.sin_addr.s_addr = inet_addr(host); // IP地址
  
     // 连接到服务器
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
@@ -40,6 +44,15 @@ int main() {
             exit(EXIT_FAILURE);
         }
 
+	printf("Client says: %c\n", buf[0]);
+
+	if(send(sockfd, buf_send, 1, 0) < 0) {
+	    perror("fail to send socket.");
+	    exit(EXIT_FAILURE);
+	}
+
+	printf("send: %c\n", buf_send[0]);
+
         switch(buf[0]) {
             case 'l': change_led(); break;
             case 'w': front();      break;
@@ -50,7 +63,6 @@ int main() {
             case 'e': right_rotate();      break;
             case 'f': stop();       break;
         }
-
     }
 
     // 关闭socket
