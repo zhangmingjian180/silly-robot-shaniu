@@ -11,7 +11,7 @@ logging.basicConfig(
 logging.info("starting ...")
 
 s = socket.socket()
-addr = ("zhangmingjian180.love", 7921)
+addr = ("cddes.cn", 7921)
 key_set = {b'w', b's', b'a', b'd', b'q', b'e', b'f', b'l'}
 
 try:

@@ -36,3 +36,38 @@ env set bootargs console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 rw
 # 该行用于从 spiflash 加载根文件系统，已被弃用。
 # env set bootargs console=ttyS0,115200 panic=5 rootwait root=/dev/mtdblock3 rw rootfstype=jffs2
 ```
+
+## 服务器
+
+### 安装带有rtmp的nginx:
+```
+wget https://nginx.org/download/nginx-1.28.0.tar.gz && tar xf nginx-1.28.0.tar.gz
+wget https://github.com/arut/nginx-rtmp-module/archive/refs/heads/master.zip && unzip master.zip
+sudo apt install -y libpcre3 libpcre3-dev libssl-dev
+cd nginx-1.28.0/
+./configure --add-module=../nginx-rtmp-module-master/
+make
+sudo make install
+```
+
+### 配置nginx，修改/usr/local/nginx/conf/nginx.conf
+```
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+rtmp_auto_push on;
+
+rtmp {
+    server {
+        listen 1935;
+
+        application mytv {
+            live on;
+        }
+    }
+}
+```
+
