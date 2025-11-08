@@ -17,8 +17,9 @@ def socket_thread(subs):
             return
 
         if i == b'':
-            logging.warning("connection client interrupt %s." % str(subs))
+            logging.warning("connection client interrupt %s.", str(subs))
             return
+
         with lock_w:
             queue.put(i)
             logging.debug("put: %s", str(i))
@@ -32,7 +33,7 @@ def key_server():
     s.listen()
     while True:
         subs, _ = s.accept()
-        logging.info("build connection %s" % str(subs))
+        logging.info("build connection %s", str(subs))
         th = threading.Thread(target=socket_thread, args=[subs])
         th.start()
 
@@ -46,26 +47,26 @@ def esp_thread(subs):
         try:
             count = subs.send(i)
             if count != len(i):
-                logging.warning("failed to send %s." % str(subs))
-                with lock_w:
-                    queue.put(i)
-                    logging.debug("put: %s", str(i))
+                logging.warning("failed to send %s.", str(subs))
+                #with lock_w:
+                #    queue.put(i)
+                #    logging.debug("put: %s", str(i))
                 return
 
         except Exception:
-            logging.warning("connection interrupted %s." % str(subs))
-            with lock_w:
-                queue.put(i)
-                logging.debug("put: %s", str(i))
+            logging.warning("connection interrupted %s.", str(subs))
+            #with lock_w:
+            #    queue.put(i)
+            #    logging.debug("put: %s", str(i))
             return
 
         # check if connection is ok
         status = subs.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
         if status != 0 or subs.recv(1) == b'':
-            logging.warning("connection refused %s." % str(subs))
-            with lock_w:
-                queue.put(i)
-                logging.debug("put: %s", str(i))
+            logging.warning("connection refused %s.", str(subs))
+            #with lock_w:
+            #    queue.put(i)
+            #    logging.debug("put: %s", str(i))
             return
         logging.debug("successful to send: %s", str(i))
 
@@ -77,7 +78,7 @@ def esp_server():
     s.listen()
     while True:
         subs, _ = s.accept()
-        logging.info("build connection %s" % str(subs))
+        logging.info("build connection %s", str(subs))
         subs.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         th = threading.Thread(target=esp_thread, args=[subs])
         th.start()
