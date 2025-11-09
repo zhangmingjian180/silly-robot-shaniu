@@ -91,4 +91,5 @@ cd server/
 cp silly-robot-shaniu.service /lib/systemd/system/
 service silly-robot-shaniu start
 systemctl enable silly-robot-shaniu
+systemctl daemon-reload
 ```

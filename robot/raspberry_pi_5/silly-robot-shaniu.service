@@ -5,7 +5,7 @@ Description=rtmp video, audio and mic
 Type=idle
 ExecStart=/bin/bash /opt/silly-robot-shaniu/robot/raspberry_pi_5/run.sh
 ExecReload=/bin/kill -HUP $MAINPID
-Restart=on-failure
+Restart=always
 RestartSec=5s
 
 [Install]
