@@ -43,30 +43,23 @@ def esp_thread(subs):
         with lock_r:
             i = queue.get()
             logging.debug("get: %s", str(i))
-
         try:
             count = subs.send(i)
-            if count != len(i):
-                logging.warning("failed to send %s.", str(subs))
-                #with lock_w:
-                #    queue.put(i)
-                #    logging.debug("put: %s", str(i))
-                return
-
         except Exception:
             logging.warning("connection interrupted %s.", str(subs))
-            #with lock_w:
-            #    queue.put(i)
-            #    logging.debug("put: %s", str(i))
+            return
+        if count != len(i):
+            logging.warning("failed to send %s.", str(subs))
             return
 
         # check if connection is ok
         status = subs.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
-        if status != 0 or subs.recv(1) == b'':
-            logging.warning("connection refused %s.", str(subs))
-            #with lock_w:
-            #    queue.put(i)
-            #    logging.debug("put: %s", str(i))
+        if status != 0:
+            logging.warning("failed to check send %s.", str(subs))
+            return
+        recv_flag = subs.recv(1)
+        if recv_flag ==  b'':
+            logging.warning("can not receive flag %s.", str(subs))
             return
         logging.debug("successful to send: %s", str(i))
 
