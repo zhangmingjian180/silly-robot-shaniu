@@ -1,3 +1,4 @@
+import json
 import logging
 import socket
 import sys
@@ -10,29 +11,19 @@ logging.basicConfig(
 
 logging.info("starting ...")
 
-s = socket.socket()
+s = socket.socket(type=socket.SOCK_DGRAM)
 addr = ("cddes.cn", 7921)
-key_set = {b'w', b's', b'a', b'd', b'q', b'e', b'f', b'l'}
+key_set = {'w', 's', 'a', 'd', 'q', 'e', 'f', 'l'}
 
-try:
-    s.connect(addr)
-except TimeoutError:
-    logging.error("time out to connet %s"%str(addr))
-    sys.exit(0)
-except ConnectionRefusedError:
-    logging.error("Connection Refused to connet %s"%str(addr))
-    sys.exit(0)
-logging.info("conneted %s"%str(addr))
 logging.info("please type 'w s a d q e f l' to send, 'Enter' to exit.")
 
 
 def on_press(key):
     if hasattr(key, "char"):
-        i = bytes(key.char, "ascii")
-        if i in key_set:
-            count = s.send(i)
-            if count != len(i):
-                logging.error("failed to send.")
+        cmd = key.char
+        if cmd in key_set:
+            content = {"id": "001", "robot_cmd": cmd}
+            s.sendto(bytes(json.dumps(content), "ascii"), addr)
 
 with keyboard.Listener(on_press=on_press) as lsn:
     input()
