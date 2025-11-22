@@ -1,3 +1,4 @@
 robot/raspberry_pi_5/*.o
 robot/raspberry_pi_5/*.out
 server/__pycache__/
+robot/raspberry_pi_5/python/__pycache__/
