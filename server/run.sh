@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ss -K sport = :7921
 ss -K sport = :7922
@@ -8,7 +8,8 @@ if [ ! -e /var/log/silly-robot-shaniu ]; then
 fi
 
 cd /opt/silly-robot-shaniu/server
+source ../venv-py312/bin/activate
 
-/usr/bin/python3 server.py &
+python3 server.py &
 
 wait

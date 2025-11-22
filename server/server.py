@@ -1,80 +1,62 @@
+from datetime import datetime, timedelta, UTC
 import socket
 import multiprocessing
 import threading
+import json
+import traceback
+import redis
 
 from log import logging
 
-queue = multiprocessing.Queue()
-lock_r = threading.Lock()
-lock_w = threading.Lock()
-
-# client thread
-def socket_thread(subs):
-    while True:
-        try:
-            i = subs.recv(1)
-        except Exception:
-            return
-
-        if i == b'':
-            logging.warning("connection client interrupt %s.", str(subs))
-            return
-
-        with lock_w:
-            queue.put(i)
-            logging.debug("put: %s", str(i))
-        logging.debug("successful to receive: %s", str(i))
+redis_db = redis.Redis()
+ADDR_ROBOT_SERVER = ("0.0.0.0", 7922)
+ADDR_CLIENT_SERVER = ("0.0.0.0", 7921)
+sock_robot_server = socket.socket(type=socket.SOCK_DGRAM)
+sock_robot_server.bind(ADDR_ROBOT_SERVER)
 
 # build server of client
 def key_server():
-    addr = ("0.0.0.0", 7921)
-    s = socket.socket()
-    s.bind(addr)
-    s.listen()
+    sock = socket.socket(type=socket.SOCK_DGRAM)
+    sock.bind(ADDR_CLIENT_SERVER)
     while True:
-        subs, _ = s.accept()
-        logging.info("build connection %s", str(subs))
-        th = threading.Thread(target=socket_thread, args=[subs])
-        th.start()
-
-# robot thread
-def esp_thread(subs):
-    while True:
-        with lock_r:
-            i = queue.get()
-            logging.debug("get: %s", str(i))
         try:
-            count = subs.send(i)
+            buf, addr_client = sock.recvfrom(1024)
+            logging.debug("successful to receive: %s", str(buf))
+            r = json.loads(buf)
+            _addr = "silly:%s:addr" % r["id"]
+            if not redis_db.exists(_addr):
+                content = {"code": 1002, "message": "The robot is not online"}
+                content = bytes(json.dumps(content), "ascii")
+                count = sock.sendto(content, addr_client)
+                if count == len(content):
+                    logging.debug("successful to send: %s, %s", str(content), str(addr_client))
+                else:
+                    logging.debug("failed to send: %s, %s", str(content), str(addr_client))
+            else:
+                addr_robot = redis_db.get(_addr).decode().split(':')
+                addr_robot= (addr_robot[0], int(addr_robot[1]))
+                content = {"cmd": r["robot_cmd"]}
+                content = bytes(json.dumps(content), "ascii")
+                count = sock_robot_server.sendto(content, addr_robot)
+                if count == len(content):
+                    logging.debug("successful to send: %s, %s", str(content), str(addr_robot))
+                else:
+                    logging.debug("failed to send: %s, %s", str(content), str(addr_robot))
         except Exception:
-            logging.warning("connection interrupted %s.", str(subs))
-            return
-        if count != len(i):
-            logging.warning("failed to send %s.", str(subs))
-            return
-
-        # check if connection is ok
-        status = subs.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
-        if status != 0:
-            logging.warning("failed to check send %s.", str(subs))
-            return
-        recv_flag = subs.recv(1)
-        if recv_flag ==  b'':
-            logging.warning("can not receive flag %s.", str(subs))
-            return
-        logging.debug("successful to send: %s", str(i))
+            logging.error(traceback.format_exc())
 
 # build server of robot
 def esp_server():
-    addr = ("0.0.0.0", 7922)
-    s = socket.socket()
-    s.bind(addr)
-    s.listen()
     while True:
-        subs, _ = s.accept()
-        logging.info("build connection %s", str(subs))
-        subs.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-        th = threading.Thread(target=esp_thread, args=[subs])
-        th.start()
+        try:
+            buf, addr = sock_robot_server.recvfrom(1024)
+            logging.debug("successful to receive: %s, %s", str(buf), str(addr))
+            _addr = "silly:%s:addr" % json.loads(buf)["id"]
+            value = "%s:%s" % (addr[0], str(addr[1]))
+            redis_db.set(_addr, value, ex=18)
+            logging.debug("write %s: %s", _addr, value)
+        except Exception:
+            logging.error(traceback.format_exc())
 
 if __name__ == "__main__":
     key_process = multiprocessing.Process(target=key_server)
