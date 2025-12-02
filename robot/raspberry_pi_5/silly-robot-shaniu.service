@@ -3,7 +3,7 @@ Description=rtmp video, audio and mic
 
 [Service]
 Type=idle
-ExecStart=/bin/bash /opt/silly-robot-shaniu/robot/raspberry_pi_5/python/run.sh
+ExecStart=/opt/venv-py312/bin/python3 /opt/silly-robot-shaniu/robot/raspberry_pi_5/python/main.py
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=always
 RestartSec=5s

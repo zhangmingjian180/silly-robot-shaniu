@@ -2,6 +2,7 @@ import socket
 import json
 import asyncio
 import traceback
+import multimedia
 from motor_driver import MotorDriver
 from log import logging
 
@@ -9,6 +10,7 @@ HOST = "cddes.cn"
 PORT = 7922         # 服务器端口
 LOCAL_PORT = 9000   # 本机端口，两边共享它
 
+FFMPEG_LOG_FILE = "/var/log/silly-robot-shaniu/ffmpeg"
 
 def create_shared_socket():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -31,8 +33,8 @@ async def send_status(sock):
 
 async def receive_cmd(sock):
     md = MotorDriver()
-
-    loop = asyncio.get_running_loop() #get_event_loop()
+    ffmpeg = multimedia.Ffmpeg(multimedia.FFMPEG_CMD, FFMPEG_LOG_FILE)
+    loop = asyncio.get_running_loop()
 
     while True:
         try:
@@ -52,6 +54,10 @@ async def receive_cmd(sock):
             elif c == 'e': md.right_rotate()
             elif c == 'f': md.stop()
             elif c == 'l': md.toggle_led()
+            elif c == 'o': ffmpeg.start()
+            elif c == 'p': ffmpeg.stop()
+            else:
+                pass
 
         except Exception:
             logging.error(traceback.format_exc())
