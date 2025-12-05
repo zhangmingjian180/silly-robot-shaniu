@@ -1,0 +1,126 @@
+MDScreenManager:
+    current: "home"
+    HomeScreen:
+    LoginScreen:
+    Robot1Screen:
+
+<LoginScreen@MDScreen>:
+    name: "login"
+    MDFloatLayout:
+        md_bg_color: self.theme_cls.backgroundColor
+        MDLabel:
+            text: "登录系统"
+            halign: "center"
+            pos_hint: {"center_y": 0.8}
+            font_style: "Title"
+
+        MDTextField:
+            id: username
+            mode: "outlined"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.65}
+            MDTextFieldTrailingIcon:
+                icon: "account"
+            MDTextFieldHintText:
+                text: "用户名"
+
+        MDTextField:
+            id: password
+            password: True
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            MDTextFieldTrailingIcon:
+                icon: "lock"
+            MDTextFieldHintText:
+                text: "密码"
+
+        MDButton:
+            style: "tonal"
+            pos_hint: {"center_x": 0.5, "center_y": 0.35}
+            on_release: app.login()
+            MDButtonText:
+                text: "登录"
+
+
+<HomeScreen@MDScreen>:
+    name: "home"
+
+    MDBoxLayout:
+        md_bg_color: self.theme_cls.backgroundColor
+        orientation: "vertical"
+
+        MDTopAppBar:
+            MDTopAppBarLeadingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: "logout"
+                    on_release: app.root.current = "login"
+            MDTopAppBarTitle:
+                text: "首页"
+                halign: "center"
+            MDTopAppBarTrailingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: "theme-light-dark"
+                    on_release: app.switch_theme()
+
+        MDCard:
+            orientation: "vertical"
+            size_hint_x: .8
+            pos_hint: {"center_x": .5}
+            padding: "16dp"
+            on_release: app.enter_robot("robot1")
+            MDLabel:
+                text: "机器人1"
+                halign: "center"
+                font_style: "Title"
+        Widget:
+            size_hint_y: .1
+
+        MDCard:
+            orientation: "vertical"
+            size_hint_x: .8
+            pos_hint: {"center_x": .5}
+            padding: "16dp"
+            style: "outlined"
+            MDLabel:
+                text: "添加机器人"
+                halign: "center"
+                font_style: "Title"
+            MDIcon:
+                icon: "plus"
+                pos_hint: {"center_x": .5}
+        Widget:
+
+<Robot1Screen@MDScreen>
+    name: "robot1"
+    MDFloatLayout:
+        FfmpegVideo:
+            url: 'rtmp://cddes.cn:1935/mytv/001'
+        MDAnchorLayout:
+            anchor_x: "left"
+            anchor_y: "top"
+            MDIconButton:
+                icon: "arrow-left"
+                on_release: app.exit_robot()
+        MDAnchorLayout:
+            anchor_x: "center"
+            anchor_y: "bottom"
+            MDBoxLayout:
+                size_hint_y: .15
+                Widget:
+                MDIconButton:
+                    icon: "rotate-left"
+                    pos_hint: {"center_y": .5}
+                    on_press: app.send_cmd_to_server("q")
+                    on_release: app.send_cmd_to_server("f")
+                MDIconButton:
+                    icon: "rotate-right"
+                    pos_hint: {"center_y": .5}
+                    on_press: app.send_cmd_to_server("e")
+                    on_release: app.send_cmd_to_server("f")
+                Widget:
+        MDAnchorLayout:
+            anchor_x: "right"
+            anchor_y: "center"
+            MDIconButton:
+                icon: "alarm-light-outline"
+                on_release: app.send_cmd_to_server("l")
