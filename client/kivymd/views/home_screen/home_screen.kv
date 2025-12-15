@@ -1,0 +1,47 @@
+<HomeScreen>
+    name: "home"
+
+    MDBoxLayout:
+        md_bg_color: self.theme_cls.backgroundColor
+        orientation: "vertical"
+
+        MDTopAppBar:
+            MDTopAppBarLeadingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: "logout"
+                    on_release: app.root.current = "login"
+            MDTopAppBarTitle:
+                text: "首页"
+                halign: "center"
+            MDTopAppBarTrailingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: "theme-light-dark"
+                    on_release: root.switch_theme()
+
+        MDCard:
+            orientation: "vertical"
+            size_hint_x: .8
+            pos_hint: {"center_x": .5}
+            padding: "16dp"
+            on_release: app.root.current = "robot1"
+            MDLabel:
+                text: "机器人1"
+                halign: "center"
+                font_style: "Title"
+        Widget:
+            size_hint_y: .1
+
+        MDCard:
+            orientation: "vertical"
+            size_hint_x: .8
+            pos_hint: {"center_x": .5}
+            padding: "16dp"
+            style: "outlined"
+            MDLabel:
+                text: "添加机器人"
+                halign: "center"
+                font_style: "Title"
+            MDIcon:
+                icon: "plus"
+                pos_hint: {"center_x": .5}
+        Widget:

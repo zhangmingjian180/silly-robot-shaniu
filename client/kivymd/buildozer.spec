@@ -37,10 +37,10 @@ version = 0.0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3, filetype, kivy==2.3.1, olefile, pillow, asyncgui, asynckivy, materialshapes, materialyoucolor, https://github.com/kivymd/KivyMD/archive/master.zip, ffpyplayer==v4.5.1
+requirements = python3, filetype, kivy==2.3.1, olefile, pillow, asyncgui, asynckivy, materialshapes, materialyoucolor, https://github.com/kivymd/KivyMD/archive/master.zip, ffmpeg, ffpyplayer==v4.5.1
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
-orientation = portrait
+orientation = portrait, landscape
 
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
@@ -71,7 +71,7 @@ android.permissions = android.permission.INTERNET
 # (str) python-for-android branch to use, defaults to master
 p4a.url = https://github.com/kivy/python-for-android
 p4a.branch = release-2024.01.21
-#p4a.local_recipes = ./recipes
+p4a.local_recipes = ./recipes
 
 [buildozer]
 

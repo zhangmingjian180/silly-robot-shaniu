@@ -5,5 +5,7 @@ robot/raspberry_pi_5/python/__pycache__/
 venv-py312/
 client/kivymd/__pycache__/
 client/kivymd/*/__pycache__/
+client/kivymd/*/*/__pycache__/
+client/kivymd/*/*/*/__pycache__/
 client/kivymd/.buildozer/
 client/kivymd/bin/

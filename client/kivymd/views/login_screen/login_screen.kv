@@ -1,0 +1,38 @@
+<LoginScreen>
+    name: "login"
+    MDFloatLayout:
+        md_bg_color: self.theme_cls.backgroundColor
+        MDLabel:
+            text: "登录系统"
+            halign: "center"
+            pos_hint: {"center_y": 0.8}
+            font_style: "Title"
+
+        MDTextField:
+            id: username
+            mode: "outlined"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.65}
+            MDTextFieldTrailingIcon:
+                icon: "account"
+            MDTextFieldHintText:
+                text: "用户名"
+
+        MDTextField:
+            id: password
+            password: True
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            MDTextFieldTrailingIcon:
+                icon: "lock"
+            MDTextFieldHintText:
+                text: "密码"
+
+        MDButton:
+            style: "tonal"
+            pos_hint: {"center_x": 0.5, "center_y": 0.35}
+            on_release: app.root.get_screen("login").login()
+            MDButtonText:
+                text: "登录"
+
+

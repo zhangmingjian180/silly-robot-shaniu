@@ -1,0 +1,37 @@
+<Robot1Screen>
+    name: "robot1"
+    MDFloatLayout:
+        FfmpegVideo:
+            url: 'rtmp://cddes.cn:1935/mytv/001'
+        MDFloatLayout:
+            MDIconButton:
+                pos_hint: {"top": 0.95}
+                icon: "arrow-left"
+                size: "72dp", "72dp"
+                on_release: app.root.current = "home"
+        MDAnchorLayout:
+            anchor_x: "left"
+            anchor_y: "bottom"
+            MDIconButton:
+                icon: "rotate-left"
+                size: "72dp", "72dp"
+                style: "tonal"
+                on_press: app.send_cmd_to_server("q")
+                on_release: app.send_cmd_to_server("f")
+        MDAnchorLayout:
+            anchor_x: "right"
+            anchor_y: "bottom"
+            MDIconButton:
+                icon: "rotate-right"
+                size: "72dp", "72dp"
+                style: "tonal"
+                on_press: app.send_cmd_to_server("e")
+                on_release: app.send_cmd_to_server("f")
+        MDAnchorLayout:
+            anchor_x: "right"
+            anchor_y: "center"
+            MDIconButton:
+                icon: "alarm-light-outline"
+                size: "72dp", "72dp"
+                on_release: app.send_cmd_to_server("l")
+
