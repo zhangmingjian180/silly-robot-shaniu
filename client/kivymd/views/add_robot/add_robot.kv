@@ -1,0 +1,35 @@
+<AddRobot>
+    name: "add_robot"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            MDTopAppBarLeadingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: "arrow-left"
+                    on_release: app.root.current = "home"
+            MDTopAppBarTitle:
+                text: "可添加的机器人列表"
+
+        ScrollView:
+            MDList:
+                id: devices_list
+
+        Widget:
+
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: "16dp"
+            spacing: "8dp"
+            MDButton:
+                style: "filled"
+                theme_width: "Custom"
+                size_hint_x: 1.0
+                on_release: root.add_selected_to_file()
+                MDButtonText:
+                    text: "添加"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+
+    MDCircularProgressIndicator:
+        id: loading_circular
+        size_hint: 0.1, 0.1
+        pos_hint: {'center_x': .5, 'center_y': .5}

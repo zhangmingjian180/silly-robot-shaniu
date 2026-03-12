@@ -1,4 +1,13 @@
+# ================== 必须是文件第一行 ==================
+import logging
+logging.getLogger("bleak.backends").setLevel(logging.WARNING)
+
+# ---- 4. Kivy 日志 ----
+#from kivy.config import Config
+#Config.set('kivy', 'log_level', 'warning')
+# ======================================================
 import os.path
+
 from kivy.core.text import LabelBase
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -42,13 +51,14 @@ class MainApp(MDApp):
         super().__init__(**kwargs)
         self.theme_cls.primary_palette = "Blue" # "Red" "Indigo"  # 主色
         self.theme_cls.theme_style = "Light"       # 默认主题
+        self.current_robot = None
 
     def build(self):
         root_widget = Builder.load_file(os.path.join("views", "screen_manager.kv"))
         return root_widget
 
     def send_cmd_to_server(self, cmd):
-        server_msg.send_cmd(cmd)
+        server_msg.send_cmd(self.current_robot["id"], cmd)
 
 if __name__ == "__main__":
     MainApp().run()

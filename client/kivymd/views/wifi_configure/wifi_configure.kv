@@ -1,0 +1,52 @@
+<AuthDialog>
+    headline: headline
+    password: password
+    MDDialogHeadlineText:
+        text: "需要认证"
+    MDDialogSupportingText:
+        id: headline
+        text: "请输入密码"
+        halign: "center"
+    MDDialogContentContainer:
+        orientation: "vertical"
+        MDTextField:
+            id: password
+            required: True
+            password: True
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            MDTextFieldTrailingIcon:
+                icon: "lock"
+    MDDialogButtonContainer:
+        Widget:
+        MDButton:
+            style: "text"
+            on_release: root.dismiss()
+            MDButtonText:
+                text: "取消"
+        MDButton:
+            style: "text"
+            on_release: root.connect()
+            MDButtonText:
+                text: "确定"
+
+<WifiConfigure>
+    name: "wifi_configure"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            MDTopAppBarLeadingButtonContainer:
+                MDActionTopAppBarButton:
+                    icon: "arrow-left"
+                    on_release: app.root.current = "home"
+            MDTopAppBarTitle:
+                text: "可连接的 Wi-Fi 列表"
+
+        ScrollView:
+            MDList:
+                id: wifi_list
+
+    MDCircularProgressIndicator:
+        id: loading_circular
+        size_hint: 0.1, 0.1
+        pos_hint: {'center_x': .5, 'center_y': .5}

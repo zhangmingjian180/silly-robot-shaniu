@@ -1,7 +1,39 @@
+<RobotCard>
+    orientation: "vertical"
+    size_hint_x: .8
+    size_hint_y: None
+    height: "256dp"
+    pos_hint: {"center_x": .5}
+    padding: "16dp"
+    MDBoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        MDIconButton:
+            pos_hint: {"center_y": .5}
+            icon: "wifi-cog"
+            on_release: root.goto_wifi_configure()
+        Widget:
+        MDIconButton:
+            id: card_menu_module
+            pos_hint: {"center_y": .5}
+            icon: "menu"
+            on_release: root.menu_open()
+    MDDivider:
+    MDLabel:
+        id: label
+        text: "机器人模板"
+        halign: "center"
+        valign: "middle"
+        font_style: "Title"
+    Widget:
+        size_hint_y: None
+        height: "20dp"
+
 <HomeScreen>
     name: "home"
 
     MDBoxLayout:
+        id: box
         md_bg_color: self.theme_cls.backgroundColor
         orientation: "vertical"
 
@@ -18,30 +50,25 @@
                     icon: "theme-light-dark"
                     on_release: root.switch_theme()
 
-        MDCard:
-            orientation: "vertical"
-            size_hint_x: .8
-            pos_hint: {"center_x": .5}
-            padding: "16dp"
-            on_release: app.root.current = "robot1"
-            MDLabel:
-                text: "机器人1"
-                halign: "center"
-                font_style: "Title"
-        Widget:
-            size_hint_y: .1
+        ScrollView:
+            MDList:
+                id: box_r
+                spacing: "16dp"
+                padding: "32dp", "0dp", "32dp", "32dp"
 
-        MDCard:
-            orientation: "vertical"
-            size_hint_x: .8
-            pos_hint: {"center_x": .5}
-            padding: "16dp"
-            style: "outlined"
-            MDLabel:
-                text: "添加机器人"
-                halign: "center"
-                font_style: "Title"
-            MDIcon:
-                icon: "plus"
-                pos_hint: {"center_x": .5}
-        Widget:
+                MDCard:
+                    orientation: "vertical"
+                    size_hint_x: .8
+                    size_hint_y: None
+                    height: "256dp"
+                    pos_hint: {"center_x": .5}
+                    padding: "16dp"
+                    style: "outlined"
+                    on_release: root.goto_add_robot()
+                    MDLabel:
+                        text: "添加机器人"
+                        halign: "center"
+                        font_style: "Title"
+                    MDIcon:
+                        icon: "plus"
+                        pos_hint: {"center_x": .5}

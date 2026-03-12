@@ -5,18 +5,23 @@ from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 
-
 from .ffmpeg_video import FfmpegVideo
 
 Builder.load_file(
-    os.path.join("views", "robot_screen", "robot1_screen.kv"))
+    os.path.join("views", "robot_screen", "robot_screen.kv"))
 
-class Robot1Screen(MDScreen):
+class RobotScreen(MDScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.app = MDApp.get_running_app()
         self.old_clearcolor = None
         self.old_theme_style = None
+
+    def on_enter(self):
+        self.ids.video.start()
+
+    def on_leave(self):
+        self.ids.video.stop()
 
     def on_pre_enter(self):
         if platform != "android":

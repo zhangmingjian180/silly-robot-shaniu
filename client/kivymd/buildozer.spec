@@ -25,7 +25,7 @@ icon.filename = %(source.dir)s/assets/images/logo.png
 android.presplash_color = #000000
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py, gif, png, jpg, jpeg, ttf, ttc, kv, json, txt, md
+source.include_exts = py, gif, png, jpg, jpeg, ttf, ttc, kv, json, yaml, txt, md
 
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
 # contains an 'androidx' package, or any package from Kotlin source.
@@ -33,11 +33,11 @@ source.include_exts = py, gif, png, jpg, jpeg, ttf, ttc, kv, json, txt, md
 # android.enable_androidx = True
 
 # (str) Application versioning (method 2)
-version = 0.0.1
+version = 0.0.2
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3, filetype, kivy==2.3.1, olefile, pillow, asyncgui, asynckivy, materialshapes, materialyoucolor, https://github.com/kivymd/KivyMD/archive/master.zip, ffmpeg, ffpyplayer==v4.5.1
+requirements = python3, filetype, kivy==2.3.1, olefile, pillow, asyncgui, asynckivy, materialshapes, materialyoucolor, https://github.com/kivymd/KivyMD/archive/master.zip, ffmpeg, ffpyplayer==v4.5.1, pyyaml==6.0.3
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait, landscape
@@ -66,7 +66,11 @@ android.archs = arm64-v8a
 
 # android.release_artifact = apk
 
-android.permissions = android.permission.INTERNET
+android.permissions = android.permission.INTERNET, android.permission.BLUETOOTH, android.permission.BLUETOOTH_SCAN, android.permission.BLUETOOTH_CONNECT, android.permission.ACCESS_FINE_LOCATION, android.permission.BLUETOOTH_ADMIN
+
+android.add_src = android_src
+android.entrypoint = cn.cddes.robot.MainActivity
+android.activity_class_name = cn.cddes.robot.MainActivity
 
 # (str) python-for-android branch to use, defaults to master
 p4a.url = https://github.com/kivy/python-for-android
