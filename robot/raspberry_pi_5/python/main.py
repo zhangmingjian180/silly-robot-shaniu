@@ -1,3 +1,4 @@
+import multiprocessing
 import socket
 import json
 import asyncio
@@ -5,6 +6,8 @@ import traceback
 import multimedia
 from motor_driver import MotorDriver
 from log import logging
+from config import config
+from bluetooth import robot_bluetooth
 
 HOST = "cddes.cn"
 PORT = 7922         # 服务器端口
@@ -18,18 +21,18 @@ def create_shared_socket():
     sock.setblocking(False)  # asyncio 必须非阻塞
     return sock
 
-
 async def send_status(sock):
     addr = (HOST, PORT)
     while True:
         try:
-            robot_stat = {"id": "001"}
+            robot_stat = {"id": config['id']}
             sock.sendto(json.dumps(robot_stat).encode("ascii"), addr)
             logging.debug("successful to send: %s", robot_stat)
             await asyncio.sleep(15)
+        except socket.gaierror:
+            pass
         except Exception:
             logging.error(traceback.format_exc())
-
 
 async def receive_cmd(sock):
     md = MotorDriver()
@@ -70,7 +73,7 @@ async def main():
         receive_cmd(sock)
     )
 
-
 if __name__ == "__main__":
+    ble_pro = multiprocessing.Process(target=robot_bluetooth.publish)
+    ble_pro.start()
     asyncio.run(main())
-

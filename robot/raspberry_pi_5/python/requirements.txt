@@ -1,2 +1,4 @@
 logging==0.4.9.6
 python-periphery==2.4.1
+bluezero==0.9.1
+pyaml_env==1.2.2
