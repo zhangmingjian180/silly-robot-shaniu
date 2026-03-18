@@ -17,3 +17,19 @@ def add_to_json(data, filename):
     ori = read_json(filename)
     ori.extend(data)
     write_json(ori, filename)
+
+def update_json(robot_id, name, value, filename):
+    ori = read_json(filename)
+    for i in range(len(ori)):
+        if ori[i]["id"] == robot_id:
+            ori[i][name] = value
+            break
+    write_json(ori, filename)
+
+def delete_json(robot_id, filename):
+    ori = read_json(filename)
+    for i in range(len(ori)):
+        if ori[i]["id"] == robot_id:
+            ori.pop(i)
+            break
+    write_json(ori, filename)

@@ -12,6 +12,7 @@ from kivymd.uix.list.list import (
     MDListItemTrailingCheckbox
 )
 from kivymd.uix.label import MDLabel, MDIcon
+from kivymd.app import MDApp
 
 from utils.bluetooth import run_get_info_list
 from utils.data_file import add_to_json, read_json
@@ -27,7 +28,12 @@ class AddRobot(MDScreen):
         super().__init__(*args, **kwargs)
         self.scan_info = None
         self.selected_info = set()
-        self.saved_info = [ e["id"] for e in read_json(ROBOTS_FILE) ]
+        self.app = MDApp.get_running_app()
+        self.saved_info = [e["id"] for e in read_json(ROBOTS_FILE)]
+
+    def back_home(self):
+        self.app.refresh_screen("home")
+        self.app.root.current = "home"
 
     def active_change(self, checkbox, active):
         if active:
@@ -45,7 +51,7 @@ class AddRobot(MDScreen):
         for device in self.ids.devices_list.children:
             self.ids.devices_list.remove_widget(device)
         self.selected_info = set()
-        self.saved_info = [ e["id"] for e in read_json(ROBOTS_FILE) ]
+        self.saved_info = [e["id"] for e in read_json(ROBOTS_FILE)]
         self._on_load_done()
 
     def on_enter(self):

@@ -51,7 +51,7 @@ class MainApp(MDApp):
         super().__init__(**kwargs)
         self.theme_cls.primary_palette = "Blue" # "Red" "Indigo"  # 主色
         self.theme_cls.theme_style = "Light"       # 默认主题
-        self.current_robot = None
+        self.current_robot = {}
 
     def build(self):
         root_widget = Builder.load_file(os.path.join("views", "screen_manager.kv"))
@@ -59,6 +59,11 @@ class MainApp(MDApp):
 
     def send_cmd_to_server(self, cmd):
         server_msg.send_cmd(self.current_robot["id"], cmd)
+
+    def refresh_screen(self, screen_name):
+        old_screen = self.root.get_screen(screen_name)
+        self.root.remove_widget(old_screen)
+        self.root.add_widget(type(old_screen)())
 
 if __name__ == "__main__":
     MainApp().run()

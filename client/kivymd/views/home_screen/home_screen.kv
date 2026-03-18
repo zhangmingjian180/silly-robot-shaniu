@@ -1,3 +1,73 @@
+<RenameDialog>
+    headline: headline
+    MDDialogIcon:
+        icon: "pencil-outline"
+    MDDialogHeadlineText:
+        text: "重命名"
+    MDDialogSupportingText:
+        id: headline
+        text: "请输入新名："
+        halign: "left"
+    MDDialogContentContainer:
+        orientation: "vertical"
+        MDTextField:
+            id: newname
+            required: True
+            size_hint_x: 1.0
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            text: root.robot_name
+    MDDialogButtonContainer:
+        Widget:
+        MDButton:
+            style: "text"
+            on_release: root.dismiss()
+            MDButtonText:
+                text: "取消"
+        MDButton:
+            style: "text"
+            on_release: root.rename()
+            MDButtonText:
+                text: "确定"
+
+<InfoDialog>
+    MDDialogIcon:
+        icon: "information"
+    MDDialogHeadlineText:
+        text: "详细信息"
+    MDDialogSupportingText:
+        halign: "left"
+        text: root.robot_info
+    MDDialogButtonContainer:
+        Widget:
+        MDButton:
+            style: "text"
+            on_release: root.dismiss()
+            MDButtonText:
+                text: "确定"
+
+<DeleteDialog>
+    headline: headline
+    MDDialogIcon:
+        icon: "trash-can-outline"
+    MDDialogHeadlineText:
+        text: "删除"
+    MDDialogSupportingText:
+        id: headline
+        text: '确认是否删除 "%s" ?' % root.robot_name
+        halign: "left"
+    MDDialogButtonContainer:
+        Widget:
+        MDButton:
+            style: "text"
+            on_release: root.dismiss()
+            MDButtonText:
+                text: "取消"
+        MDButton:
+            style: "text"
+            on_release: root.delete_robot()
+            MDButtonText:
+                text: "确定"
+
 <RobotCard>
     orientation: "vertical"
     size_hint_x: .8
