@@ -85,11 +85,24 @@ rtmp {
 }
 ```
 
-## 启动python服务
+## python 服务
+
+### 安装 python
+```
+python3 -m venv venv-py312
+```
+
+### 启动套接字
 ```
 cd server/
 cp silly-robot-shaniu.service /lib/systemd/system/
 service silly-robot-shaniu start
 systemctl enable silly-robot-shaniu
 systemctl daemon-reload
+```
+
+### 启动 HTTP
+```
+cd server_http/
+pip3 install -r requirements.txt
 ```

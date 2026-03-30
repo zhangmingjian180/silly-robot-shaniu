@@ -9,3 +9,5 @@ client/kivymd/*/*/__pycache__/
 client/kivymd/*/*/*/__pycache__/
 client/kivymd/.buildozer/
 client/kivymd/bin/
+server_http/__pycache__/
+server_http/api/__pycache__/

@@ -1,0 +1,32 @@
+<NavigationDrawer>
+    radius: 0, dp(16), dp(16), 0
+    MDNavigationDrawerMenu:
+        MDNavigationDrawerHeader:
+            orientation: "vertical"
+            padding: 0, dp(16), 0, 0
+            MDNavigationDrawerLabel:
+                text: "电话：" + "18784108903"
+            MDNavigationDrawerLabel:
+                text: "ID: " + "10001"
+        MDNavigationDrawerDivider:
+        MDNavigationDrawerItem:
+            MDNavigationDrawerItemLeadingIcon:
+                icon: "cellphone"
+            MDNavigationDrawerItemText:
+                text: "修改手机"
+        MDNavigationDrawerItem:
+            MDNavigationDrawerItemLeadingIcon:
+                icon: "lock-outline"
+            MDNavigationDrawerItemText:
+                text: "修改密码"
+        MDNavigationDrawerItem:
+            MDNavigationDrawerItemLeadingIcon:
+                icon: "trash-can-outline"
+            MDNavigationDrawerItemText:
+                text: "注销账号"
+        MDNavigationDrawerItem:
+            on_release: app.root.current = "login"
+            MDNavigationDrawerItemLeadingIcon:
+                icon: "logout"
+            MDNavigationDrawerItemText:
+                text: "退出登陆"

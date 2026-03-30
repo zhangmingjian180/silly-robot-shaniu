@@ -14,6 +14,7 @@ from utils.data_file import read_json, update_json, delete_json
 from utils.config import config
 from views.add_robot import AddRobot
 from views.wifi_configure import WifiConfigure
+from views.navigation_drawer import NavigationDrawer
 
 ROBOTS_FILE = config["robots_file"]
 

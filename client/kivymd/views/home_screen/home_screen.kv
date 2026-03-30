@@ -101,44 +101,53 @@
 
 <HomeScreen>
     name: "home"
-
-    MDBoxLayout:
-        id: box
-        md_bg_color: self.theme_cls.backgroundColor
-        orientation: "vertical"
-
-        MDTopAppBar:
-            MDTopAppBarLeadingButtonContainer:
-                MDActionTopAppBarButton:
-                    icon: "logout"
-                    on_release: app.root.current = "login"
-            MDTopAppBarTitle:
-                text: "首页"
-                halign: "center"
-            MDTopAppBarTrailingButtonContainer:
-                MDActionTopAppBarButton:
-                    icon: "theme-light-dark"
-                    on_release: root.switch_theme()
-
-        ScrollView:
-            MDList:
-                id: box_r
-                spacing: "16dp"
-                padding: "32dp", "0dp", "32dp", "32dp"
-
-                MDCard:
+    md_bg_color: self.theme_cls.backgroundColor
+    MDNavigationLayout:
+        MDScreenManager:
+            MDScreen:
+                MDBoxLayout:
+                    id: box
+                    md_bg_color: self.theme_cls.backgroundColor
                     orientation: "vertical"
-                    size_hint_x: .8
-                    size_hint_y: None
-                    height: "256dp"
-                    pos_hint: {"center_x": .5}
-                    padding: "16dp"
-                    style: "outlined"
-                    on_release: root.goto_add_robot()
-                    MDLabel:
-                        text: "添加机器人"
-                        halign: "center"
-                        font_style: "Title"
-                    MDIcon:
-                        icon: "plus"
-                        pos_hint: {"center_x": .5}
+
+                    MDTopAppBar:
+                        MDTopAppBarLeadingButtonContainer:
+                            MDActionTopAppBarButton:
+                                icon: "account-circle-outline"
+                                on_release: nav_drawer.set_state("toggle")
+                        MDTopAppBarTitle:
+                            padding: dp(42), 0, 0, 0
+                            text: "首页"
+                            halign: "center"
+                        MDTopAppBarTrailingButtonContainer:
+                            MDActionTopAppBarButton:
+                                icon: "cloud-arrow-up-outline"
+                            MDActionTopAppBarButton:
+                                icon: "theme-light-dark"
+                                on_release: root.switch_theme()
+
+                    ScrollView:
+                        MDList:
+                            id: box_r
+                            spacing: "16dp"
+                            padding: "32dp", "0dp", "32dp", "32dp"
+
+                            MDCard:
+                                orientation: "vertical"
+                                size_hint_x: .8
+                                size_hint_y: None
+                                height: "256dp"
+                                pos_hint: {"center_x": .5}
+                                padding: "16dp"
+                                style: "outlined"
+                                on_release: root.goto_add_robot()
+                                MDLabel:
+                                    text: "添加机器人"
+                                    halign: "center"
+                                    font_style: "Title"
+                                MDIcon:
+                                    icon: "plus"
+                                    pos_hint: {"center_x": .5}
+
+        NavigationDrawer:
+            id: nav_drawer
