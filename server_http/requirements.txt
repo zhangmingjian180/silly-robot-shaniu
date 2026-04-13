@@ -1,2 +1,10 @@
 fastapi
 uvicorn
+aiomysql
+redis
+Pillow
+passlib
+bcrypt==3.2.2
+python-jose
+python-multipart
+user-agents
