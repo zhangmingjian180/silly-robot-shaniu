@@ -105,4 +105,8 @@ systemctl daemon-reload
 ```
 cd server_http/
 pip3 install -r requirements.txt
+cp silly-robot-shaniu-http.service /lib/systemd/system/
+service silly-robot-shaniu-http start
+systemctl enable silly-robot-shaniu-http
+systemctl daemon-reload
 ```

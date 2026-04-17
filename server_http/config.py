@@ -7,3 +7,6 @@ MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD")
 MYSQL_DB = "silly_robot"
 
 ACCESS_TOKEN_EXPIRE_DAYS = 30
+
+LOG_DIR = "/var/log/silly-robot-shaniu"
+LOG_LEVEL = "DEBUG"

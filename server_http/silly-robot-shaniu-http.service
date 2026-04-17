@@ -1,0 +1,14 @@
+[Unit]
+Description=http server fastapi
+
+[Service]
+Type=idle
+WorkingDirectory=/opt/silly-robot-shaniu/server_http
+Environment="ALIBABA_CLOUD_ACCESS_KEY_ID=L************r" "ALIBABA_CLOUD_ACCESS_KEY_SECRET=4c1d************1" "MYSQL_PASSWORD=18********n" "SECRET_KEY=ha************j"
+ExecStart=/opt/silly-robot-shaniu/venv-py312/bin/uvicorn --host="0.0.0.0" --port=8080 main:app
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

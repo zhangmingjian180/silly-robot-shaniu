@@ -8,3 +8,4 @@ bcrypt==3.2.2
 python-jose
 python-multipart
 user-agents
+concurrent-log-handler
