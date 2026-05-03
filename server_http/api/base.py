@@ -3,7 +3,7 @@ import uuid
 from passlib.hash import bcrypt
 from pydantic import BaseModel, Field
 from dataclasses import dataclass
-from fastapi import FastAPI, Request, HTTPException, Header, Response, Depends, Security
+from fastapi import FastAPI, Request, HTTPException, Header, Response, Depends, Security, Path
 from fastapi.responses import StreamingResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from contextlib import asynccontextmanager
@@ -317,7 +317,7 @@ class PasswordChange(BaseModel):
         example="dahjg123u3",
         description=DESCRIPTION_PASSWORD)
 
-@app.post("/api/user/password",
+@app.post("/api/user/me/password",
     summary="修改密码",
     description="用户登录后修改自己的密码",
     response_class=Response)
@@ -327,9 +327,8 @@ async def change_password(
     pool=Depends(get_mysql_pool)
 ):
     async with pool.acquire() as conn:
+        await conn.begin()
         async with conn.cursor() as cursor:
-            await conn.begin()
-
             # 锁住当前用户密码记录
             sql = """
             SELECT `password` FROM user
@@ -353,10 +352,51 @@ async def change_password(
             WHERE `id`=%s
             """
             await cursor.execute(sql, (new_hash, user.id))
+        await conn.commit()
+    return Response()
 
-            await conn.commit()
+class PasswordChangeWithSMS(BaseModel):
+    sms_code: str = Field(
+        ...,
+        example=EXAMPLE_SMS_CODE,
+        description=DESCRIPTION_SMS_CODE)
+    password: str = Field(
+        ...,
+        example=EXAMPLE_PASSWORD,
+        description=DESCRIPTION_PASSWORD)
 
-        return Response()
+@app.post("/api/phone/{phone}/password",
+    summary="修改密码",
+    description="用户登陆前使用手机号验证码修改密码",
+    response_class=Response)
+async def change_password_with_sms(
+    data: PasswordChangeWithSMS,
+    phone: str=Path(..., description=DESCRIPTION_PHONE),
+    pool=Depends(get_mysql_pool)
+):
+    # 1. 校验验证码
+    status = await SMS.checkSmsVerifyCodeRequest(phone, data.sms_code)
+    if not status:
+        raise HTTPException(400, "短信验证码错误")
+
+    # 2. 检验密码格式
+    pattern = r'^[A-Za-z0-9]{10,20}$'
+    if not re.fullmatch(pattern, data.password):
+        raise HTTPException(400, "密码格式错误")
+    password_hash = bcrypt.hash(data.password)
+
+    # 3. 更新密码
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cursor:
+            sql = """
+            UPDATE `user` SET `password`=%s
+            WHERE `phone`=%s
+            """
+            await cursor.execute(sql, (password_hash, phone))
+            if not cursor.rowcount:
+                raise HTTPException(404, "用户不存在")
+        await conn.commit()
+    return Response()
 
 class PhoneChange(BaseModel):
     old_phone_sms_code: str = Field(
@@ -382,9 +422,8 @@ async def change_phone(
     pool=Depends(get_mysql_pool)
 ):
     async with pool.acquire() as conn:
+        await conn.begin()
         async with conn.cursor() as cursor:
-            await conn.begin()
-
             # 锁住当前用户
             sql = """
             SELECT `phone` FROM user
@@ -415,10 +454,8 @@ async def change_phone(
             WHERE `id`=%s
             """
             await cursor.execute(sql, (data.new_phone, user.id))
-
-            await conn.commit()
-
-        return Response()
+        await conn.commit()
+    return Response()
 
 class UserDelete(BaseModel):
     phone: str = Field(
@@ -448,9 +485,7 @@ async def delete_user_me(
         async with conn.cursor() as cursor:
             sql = "DELETE FROM `user` WHERE `phone` = %s"
             await cursor.execute(sql, data.phone)
-            rows = cursor.rowcount
+            if not cursor.rowcount:
+                raise HTTPException(404, "用户不存在")
         await conn.commit()
-
-    if rows == 0:
-        raise HTTPException(404)
     return Response()
