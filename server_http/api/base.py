@@ -412,7 +412,7 @@ class PhoneChange(BaseModel):
         example="5678",
         description=DESCRIPTION_SMS_CODE)
 
-@app.post("/api/user/phone",
+@app.post("/api/user/me/phone",
     summary="修改手机号",
     description="需提供短信验证码, 新旧手机号不能重复",
     response_class=Response)

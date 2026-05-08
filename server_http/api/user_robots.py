@@ -9,7 +9,7 @@ class Robots(BaseModel):
         example=[1],
         description="机器人ID列表")
 
-@app.post("/api/usr/robots",
+@app.post("/api/user/me/robots",
     summary="上传用户的机器人",
     description="机器人为数组",
     response_class=Response)
@@ -56,7 +56,7 @@ async def post_user_robots(
                 raise HTTPException(400, ';'.join(map(str, e.args)))
     return Response()
 
-@app.get("/api/user/robots",
+@app.get("/api/user/me/robots",
     summary="获取机器人列表",
     description="机器人为数组")
 async def get_user_robots(
