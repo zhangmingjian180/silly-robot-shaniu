@@ -47,6 +47,8 @@ LabelBase.register(
 import views
 
 class MainApp(MDApp):
+    title = "多尔斯"
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.theme_cls.primary_palette = "Blue" # "Red" "Indigo"  # 主色

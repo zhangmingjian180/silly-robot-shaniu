@@ -1,4 +1,6 @@
+from threading import Thread
 import os.path
+from kivy.clock import Clock
 from kivy.utils import platform
 from kivy.lang import Builder
 from kivy.core.window import Window
@@ -10,8 +12,10 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.dialog import MDDialog
 
 from utils import set_status_bar_color
-from utils.data_file import read_json, update_json, delete_json
+from utils.data_file import read_json, update_json, delete_json, add_to_json
 from utils.config import config
+from utils.storage import exists_token, get_token
+from utils.server_http import api_post_user_me_robots, api_get_user_me_robots
 from views.add_robot import AddRobot
 from views.wifi_configure import WifiConfigure
 from views.navigation_drawer import NavigationDrawer
@@ -21,6 +25,12 @@ ROBOTS_FILE = config["robots_file"]
 Builder.load_file(
     os.path.join("views", "home_screen", "home_screen.kv"))
 
+class TipMDDialog(MDDialog):
+    def __init__(self, title, text, *args, **kwargs):
+        self._title = title
+        self._text = text
+        super().__init__(*args, **kwargs)
+
 class InfoDialog(MDDialog):
     robot_info = None
 
@@ -29,7 +39,7 @@ class InfoDialog(MDDialog):
             "设备ID：%s\n"
             "设备名：%s\n"
             "蓝牙地址：%s"
-        ) % (robot["id"], robot_name, robot["address"])
+        ) % (robot["id"], robot_name, robot.get("address"))
         super().__init__(*args, **kwargs)
 
 class RenameDialog(MDDialog):
@@ -115,7 +125,7 @@ class RobotCard(MDCard):
 
     def set(self, robot):
         self.robot = robot
-        self.robot_name = self.robot.get("name", "多尔斯机器人-" + self.robot["id"])
+        self.robot_name = self.robot.get("name", "多尔斯机器人-" + format(self.robot["id"], "03d"))
         self.ids.label.text = self.robot_name
         return self
 
@@ -138,7 +148,77 @@ class HomeScreen(MDScreen):
     def __init__(self, *args, **kwargs):
         self.app = MDApp.get_running_app()
         self.robots = read_json(ROBOTS_FILE)
+        self.has_token = exists_token()
         super().__init__(*args, **kwargs)
+        self.error_text = None
+        self.robots_download = None
+
+    def account_on_press(self):
+        if self.has_token:
+            self.ids.nav_drawer.set_state("toggle")
+        else:
+            self.app.root.current = "login"
+
+    def _upload_done(self):
+        self.ids.loading_circular.active = False
+        if self.error_text:
+            TipMDDialog("上传错误！", self.error_text).open()
+            self.error_text = None
+        else:
+            TipMDDialog("上传成功！", "信息已上传至云端").open()
+
+    def _upload(self):
+        token = get_token()
+        robots = [robot["id"] for robot in self.robots]
+        try:
+            api_post_user_me_robots(token, robots)
+        except Exception as e:
+            self.error_text = str(e.args[0])
+        Clock.schedule_once(lambda dt: self._upload_done())
+
+    def cloud_arrow_up_on_press(self):
+        if self.has_token:
+            self.ids.loading_circular.active = True
+            Thread(
+                target=self._upload,
+                daemon=True
+            ).start()
+        else:
+            self.app.root.current = "login"
+
+    def _download_done(self):
+        self.ids.loading_circular.active = False
+        if self.error_text:
+            TipMDDialog("下载错误！", self.error_text).open()
+            self.error_text = None
+        else:
+            old_robots_id = [robot["id"] for robot in self.robots]
+            new_robots_id = [robot for robot in self.robots_download if robot not in old_robots_id]
+            new_robots = [{"id": robot_id} for robot_id in new_robots_id]
+            add_to_json(new_robots, ROBOTS_FILE)
+            self.robots = read_json(ROBOTS_FILE)
+            self.robots_download = None
+            for robot in new_robots:
+                self.ids.box_r.add_widget(self.create_robot_card(robot, self), index=1)
+            TipMDDialog("下载成功！", "信息已下载至本地").open()
+
+    def _download(self):
+        token = get_token()
+        try:
+            self.robots_download = api_get_user_me_robots(token)
+        except Exception as e:
+            self.error_text = str(e.args[0])
+        Clock.schedule_once(lambda dt: self._download_done())
+
+    def cloud_arrow_down_on_press(self):
+        if self.has_token:
+            self.ids.loading_circular.active = True
+            Thread(
+                target=self._download,
+                daemon=True
+            ).start()
+        else:
+            self.app.root.current = "login"
 
     def on_kv_post(self, base_widget):
         for robot in self.robots:
@@ -146,6 +226,7 @@ class HomeScreen(MDScreen):
 
     def delete_card(self, card):
         self.ids.box_r.remove_widget(card)
+        self.robots.remove(card.robot)
 
     def switch_theme(self):
         """切换浅色/深色模式"""

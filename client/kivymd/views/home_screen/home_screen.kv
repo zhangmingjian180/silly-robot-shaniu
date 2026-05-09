@@ -1,3 +1,19 @@
+<TipMDDialog>
+    MDDialogHeadlineText:
+        text: root._title
+        halign: "left"
+    MDDialogSupportingText:
+        text: root._text
+        halign: "left"
+    MDDialogButtonContainer:
+        spacing: "8dp"
+        Widget:
+        MDButton:
+            style: "text"
+            on_release: root.dismiss()
+            MDButtonText:
+                text: "确定"
+
 <RenameDialog>
     headline: headline
     MDDialogIcon:
@@ -113,15 +129,19 @@
                     MDTopAppBar:
                         MDTopAppBarLeadingButtonContainer:
                             MDActionTopAppBarButton:
-                                icon: "account-circle-outline"
-                                on_release: nav_drawer.set_state("toggle")
-                        MDTopAppBarTitle:
-                            padding: dp(42), 0, 0, 0
-                            text: "首页"
-                            halign: "center"
+                                icon: "account-circle-outline" if root.has_token else "account-off-outline"
+                                on_release: root.account_on_press()
+                        #MDTopAppBarTitle:
+                        #    padding: dp(42), 0, 0, 0
+                        #    text: "首页"
+                        #    halign: "center"
                         MDTopAppBarTrailingButtonContainer:
                             MDActionTopAppBarButton:
                                 icon: "cloud-arrow-up-outline"
+                                on_release: root.cloud_arrow_up_on_press()
+                            MDActionTopAppBarButton:
+                                icon: "cloud-arrow-down-outline"
+                                on_release: root.cloud_arrow_down_on_press()
                             MDActionTopAppBarButton:
                                 icon: "theme-light-dark"
                                 on_release: root.switch_theme()
@@ -148,6 +168,12 @@
                                 MDIcon:
                                     icon: "plus"
                                     pos_hint: {"center_x": .5}
+
+                MDCircularProgressIndicator:
+                    id: loading_circular
+                    active: False
+                    size_hint: 0.2, 0.2
+                    pos_hint: {'center_x': .5, 'center_y': .5}
 
         NavigationDrawer:
             id: nav_drawer

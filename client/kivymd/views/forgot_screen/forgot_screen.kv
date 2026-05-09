@@ -1,0 +1,124 @@
+<ForgotScreen>
+    name: "forgot"
+    MDFloatLayout:
+        md_bg_color: self.theme_cls.backgroundColor
+
+        MDLabel:
+            text: "忘记密码"
+            halign: "center"
+            pos_hint: {"center_y": 0.92}
+            font_style: "Title"
+
+        # 📱 手机号
+        MDTextField:
+            id: phone
+            mode: "filled"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.8}
+            input_filter: "int"
+            theme_bg_color: "Custom"
+            fill_color_normal: self.theme_cls.backgroundColor
+            fill_color_focus: self.theme_cls.backgroundColor
+            MDTextFieldTrailingIcon:
+                icon: "cellphone"
+            MDTextFieldHintText:
+                text: "手机号"
+
+        # 🖼 图形验证码输入
+        MDTextField:
+            id: captcha_code
+            mode: "filled"
+            size_hint_x: 0.5
+            pos_hint: {"center_x": 0.35, "center_y": 0.68}
+            theme_bg_color: "Custom"
+            fill_color_normal: self.theme_cls.backgroundColor
+            fill_color_focus: self.theme_cls.backgroundColor
+            MDTextFieldTrailingIcon:
+                icon: "shield-key"
+            MDTextFieldHintText:
+                text: "验证码"
+
+        # 🖼 图形验证码图片（点击刷新）
+        FitImage:
+            id: captcha_img
+            size_hint: None, None
+            size: "120dp", "40dp"
+            pos_hint: {"right": 0.9, "center_y": 0.68}
+            on_touch_down:
+                if self.collide_point(*args[1].pos): root.update_captcha()
+
+        # 📲 短信验证码输入 + 按钮
+        MDTextField:
+            id: sms_code
+            mode: "filled"
+            size_hint_x: 0.5
+            pos_hint: {"center_x": 0.35, "center_y": 0.56}
+            theme_bg_color: "Custom"
+            fill_color_normal: self.theme_cls.backgroundColor
+            fill_color_focus: self.theme_cls.backgroundColor
+            MDTextFieldTrailingIcon:
+                icon: "message-text"
+            MDTextFieldHintText:
+                text: "短信验证码"
+ 
+        # 📩 获取验证码按钮（带倒计时）
+        MDButton:
+            id: btn_send_code
+            style: "tonal"
+            radius: dp(10)
+            pos_hint: {"right": 0.9, "center_y": 0.56}
+            on_release: root.send_sms_code()
+            MDButtonText:
+                id: btn_send_code_text
+                text: "获取验证码"
+
+        # 🔒 密码
+        MDTextField:
+            id: password
+            mode: "filled"
+            password: True
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.44}
+            theme_bg_color: "Custom"
+            fill_color_normal: self.theme_cls.backgroundColor
+            fill_color_focus: self.theme_cls.backgroundColor
+            MDTextFieldTrailingIcon:
+                icon: "lock"
+            MDTextFieldHintText:
+                text: "新密码"
+            MDTextFieldHelperText:
+                text: "长度为10~20，可以是大小写字母和数字"
+
+        # 🔒 确认密码
+        MDTextField:
+            id: password_confirm
+            mode: "filled"
+            password: True
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.32}
+            theme_bg_color: "Custom"
+            fill_color_normal: self.theme_cls.backgroundColor
+            fill_color_focus: self.theme_cls.backgroundColor
+            MDTextFieldTrailingIcon:
+                icon: "lock-check"
+            MDTextFieldHintText:
+                text: "确认新密码"
+
+        # 🚀 重置密码按钮（和登录完全一致）
+        MDButton:
+            style: "filled"
+            pos_hint: {"center_x": 0.5, "center_y": 0.2}
+            theme_width: "Custom"
+            size_hint_x: .8
+            on_release: root.reset_password()
+            MDButtonText:
+                pos_hint: {"center_x": .5, "center_y": .5}
+                text: "重置密码"
+
+        # 🔙 返回登录（风格一致）
+        MDButton:
+            style: "text"
+            pos_hint: {"center_x": 0.5, "center_y": 0.12}
+            on_release: app.root.current = "login"
+            MDButtonText:
+                text: "返回登录"

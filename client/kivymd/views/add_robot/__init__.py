@@ -44,9 +44,8 @@ class AddRobot(MDScreen):
     def add_selected_to_file(self):
         info = []
         for e in self.scan_info:
-            if e["id"] in self.selected_info:
+            if str(e["id"]) in self.selected_info:
                 info.append(e)
-
         add_to_json(info, ROBOTS_FILE)
         for device in self.ids.devices_list.children:
             self.ids.devices_list.remove_widget(device)
@@ -82,7 +81,7 @@ class AddRobot(MDScreen):
         for e in self.scan_info:
             if e["id"] not in self.saved_info:
                 tail = MDListItemTrailingCheckbox(
-                    id=e["id"],
+                    id=str(e["id"]),
                     on_active=self.active_change
                 )
             else:
@@ -95,7 +94,7 @@ class AddRobot(MDScreen):
                     icon="robot-outline",
                 ),
                 MDListItemHeadlineText(
-                    text="多尔斯机器人-" + e["id"],
+                    text="多尔斯机器人-" + format(e["id"], "03d"),
                 ),
                 MDListItemSupportingText(
                     text=e["address"],

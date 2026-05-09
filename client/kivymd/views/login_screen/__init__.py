@@ -10,6 +10,8 @@ from kivymd.uix.dialog import (
         MDDialogSupportingText,
         MDDialogButtonContainer
 )
+from utils.server_http import api_user_login, api_get_user_me
+from utils.storage import save_token, save_info
 
 Builder.load_file(
     os.path.join("views", "login_screen", "login_screen.kv"))
@@ -23,10 +25,16 @@ class LoginScreen(MDScreen):
         """登录按钮事件"""
         username = self.ids.username.text
         password = self.ids.password.text
-        if username == "admin" and password == "123":
-            self.app.root.current = "home"
-        else:
-            self.show_dialog("登录失败", "用户名或密码错误")
+        try:
+            token = api_user_login(username, password)
+            info = api_get_user_me(token)
+        except Exception as e:
+            self.show_dialog("登录失败", e.args[0])
+            return
+        save_token(token)
+        save_info(info)
+        self.app.refresh_screen("home")
+        self.app.root.current = "home"
 
     def show_dialog(self, title, text):
         """通用对话框"""
@@ -50,3 +58,7 @@ class LoginScreen(MDScreen):
             ),
         )
         self.dialog.open()
+
+    def close(self):
+        self.app.refresh_screen("home")
+        self.app.root.current = "home"

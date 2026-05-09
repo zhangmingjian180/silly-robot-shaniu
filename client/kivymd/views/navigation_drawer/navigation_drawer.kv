@@ -5,27 +5,30 @@
             orientation: "vertical"
             padding: 0, dp(16), 0, 0
             MDNavigationDrawerLabel:
-                text: "电话：" + "18784108903"
+                text: "电话：" + root.info.get("phone")
             MDNavigationDrawerLabel:
-                text: "ID: " + "10001"
+                text: "ID: " + format(root.info.get("id"), "08d")
         MDNavigationDrawerDivider:
         MDNavigationDrawerItem:
+            on_release: app.root.current = "change_phone"
             MDNavigationDrawerItemLeadingIcon:
                 icon: "cellphone"
             MDNavigationDrawerItemText:
                 text: "修改手机"
         MDNavigationDrawerItem:
+            on_release: app.root.current = "change_password"
             MDNavigationDrawerItemLeadingIcon:
                 icon: "lock-outline"
             MDNavigationDrawerItemText:
                 text: "修改密码"
         MDNavigationDrawerItem:
+            on_release: app.root.current = "delete_account"
             MDNavigationDrawerItemLeadingIcon:
                 icon: "trash-can-outline"
             MDNavigationDrawerItemText:
                 text: "注销账号"
         MDNavigationDrawerItem:
-            on_release: app.root.current = "login"
+            on_release: root.logout()
             MDNavigationDrawerItemLeadingIcon:
                 icon: "logout"
             MDNavigationDrawerItemText:
